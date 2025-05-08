@@ -1,0 +1,29 @@
+{
+  "name": "luna-backend",
+  "version": "0.0.1",
+  "description": "backend for luna",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hammsterr/luna-bcknd.git"
+  },
+  "keywords": [
+    "luna"
+  ],
+  "author": "hamyack",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/hammsterr/luna-bcknd/issues"
+  },
+  "homepage": "https://github.com/hammsterr/luna-bcknd#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  }
+}
