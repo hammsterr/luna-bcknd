@@ -1,32 +1,48 @@
-const express = require('express');
-const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
+import { createClient } from '@supabase/supabase-js'
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
-let posts = [];
+export default async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1]
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+    
+    if (error) throw error
 
-router.get('/', (req, res) => {
-  res.json(posts);
-});
+    switch (req.method) {
+      case 'GET':
+        const { data: posts } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            content,
+            likes,
+            created_at,
+            author:profiles (login, avatar_url)
+          `)
+          .order('created_at', { ascending: false })
+        
+        return res.json(posts)
 
-router.post('/', (req, res) => {
-  const { content, authorId } = req.body;
-  const post = { 
-    id: uuidv4(), 
-    content, 
-    authorId, 
-    likes: 0, 
-    comments: [], 
-    createdAt: new Date() 
-  };
-  posts.push(post);
-  res.json(post);
-});
-
-router.post('/:id/like', (req, res) => {
-  const post = posts.find(p => p.id === req.params.id);
-  if (!post) return res.status(404).json({ error: 'Post not found' });
-  post.likes++;
-  res.json(post);
-});
-
-module.exports = router;
+      case 'POST':
+        const { content } = req.body
+        const { data: post } = await supabase
+          .from('posts')
+          .insert({
+            content,
+            author_id: user.id
+          })
+          .select(`
+            id,
+            content,
+            likes,
+            created_at,
+            author:profiles (login, avatar_url)
+          `)
+          .single()
+        
+        return res.json(post)
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message })
+  }
+}
